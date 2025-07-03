@@ -1,28 +1,17 @@
-import './App.css';
 import React from 'react';
-import PageTitle from './components/PageTitle';
-import AnimalForm from './components/AnimalForm';
-import MainCard from './components/MainCard';
-import Favorites from './components/Favorites';
+import PageTitle from './components/PageTitle/PageTitle';
+import AnimalForm from './components/AnimalForm/AnimalForm';
+import MainCard from './components/MainCard/MainCard';
+import Favorites from './components/Favorites/Favorites';
+import jsonLocalStorage from './utils/jsonLocalStorage';
 
 
 const OPEN_API_DOMAIN = 'https://cataas.com';
 
-const jsonLocalStorage = {
-  setItem: (key, value) => {
-    console.log('localStorage.setItem() 실행');
-    localStorage.setItem(key, JSON.stringify(value));
-  },
-  getItem: (key) => {
-    console.log('localStorage.getItem() 실행');
-    return JSON.parse(localStorage.getItem(key));
-  },
-};
+
 
 // Open API ////////////////////////////////////////////
 const fetchCat = async (text) => {
-  console.log('fetchCat() 함수 실행');
-
   const response = await fetch(`${OPEN_API_DOMAIN}/cat/says/${text}?width=400&height=400&json=true`);
   const responseJson = await response.json();
 
@@ -35,12 +24,10 @@ function App() {
 
   const [mainAnimal, setMainAnimal] = React.useState(`${OPEN_API_DOMAIN}/cat`);
   const [favorites, setFavorites] = React.useState(() => {
-    console.log('favorites useState() 실행됨!');
     return jsonLocalStorage.getItem('favorites') || [];
   });
 
   const [count, setCount] = React.useState(() => {
-    console.log('count useState() 실행됨!');
     return jsonLocalStorage.getItem('count') || 1;
   });
 
@@ -62,7 +49,11 @@ function App() {
   }
 
   function handleHeartClick() {
-    console.log('하트 버튼 클릭');
+    if (favorites.includes(mainAnimal)) {
+      alert('이미 추가된 귀여운 고양이입니다. 😻')
+      return;
+    }
+
     setFavorites((pre) => {
       const nextFavorites = [...pre, mainAnimal];
       localStorage.setItem('favorites', JSON.stringify(nextFavorites));
